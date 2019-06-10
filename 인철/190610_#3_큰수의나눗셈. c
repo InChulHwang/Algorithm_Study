@@ -1,3 +1,11 @@
+/*
+http://www.codexpert.org:83/problem.php?cid=1124&pid=16
+큰 수의 나눗셈을 계산하는 문제이다. 
+long long 으로도 받을 수 없는 크기이기 때문에 문자열로 받아서 계산을 해야한다.
+하위단위부터 하면 시간초과가 걸리므로 상위단위부터 해야한다.
+*/
+
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include<stdio.h>
@@ -5,11 +13,11 @@
 
 char n[210], m[210];
 int N[210], M[210];
-int sol[210];		//정답을 저장 해 놓을 배열
-int pos;			//정답의 위치를 저장할 변수
+int sol[210];						//정답을 저장 해 놓을 배열
+int pos;						//정답의 위치를 저장할 변수
 int a, b;
-int start, end;		//큰 배열에서 연산에 쓰이는 부분의 처음과 끝 위치를 지정
-int len;			//나누는 수의 크기를 저장
+int start, end;						//큰 배열에서 연산에 쓰이는 부분의 처음과 끝 위치를 지정
+int len;						//나누는 수의 크기를 저장
 
 
 void Print() {
@@ -70,7 +78,7 @@ void minus(int* x, int* y) {
 				x[i - 1]--;
 			}
 		}
-		sol[pos]++;							//뺄셈 1번이 완료되면 그 위치의 결과값에 1 추가.
+		sol[pos]++;								//뺄셈 1번이 완료되면 그 위치의 결과값에 1 추가.
 		//printf("sol[pos] 출력! : pos %d sol[pos] %d\n",pos,sol[pos]);
 	}
 }
@@ -81,18 +89,18 @@ void clear() {
 }
 
 void solve() {
-
-	cal_size();								//사이즈 외 이것저것 계산.
-	start = 0;								//start와 end를 초기화
+	
+	cal_size();									//사이즈 외 이것저것 계산.
+	start = 0;									//start와 end를 초기화
 	end = len;
-	pos = 0;								//결과를 저장할 위치 초기화
+	pos = 0;									//결과를 저장할 위치 초기화
 	clear();
 
-	if (a > b) {							//n이 나눠지는 수
+	if (a > b) {									//n이 나눠지는 수
 		while (1) {							
 			minus(N+start, M);						//뺄셈 1회 진행
 			pos++;
-			if (end != a) {						//end의 위치가 끝 지점이 아니라면
+			if (end != a) {							//end의 위치가 끝 지점이 아니라면
 				start++;						//뺄셈이 끝났으니 시작,끝 위치 갱신
 				end++;
 				N[start] += N[start - 1] * 10;	//이전 시작점에 남은 값을 다음 연산을 위해 이동
@@ -100,7 +108,7 @@ void solve() {
 			else break;
 		}
 	}
-	else if (a < b) {						//m이 나눠지는 수
+	else if (a < b) {								//m이 나눠지는 수
 		while (1) {
 			minus(M+start, N);					
 			pos++;
@@ -112,20 +120,20 @@ void solve() {
 			else break;
 		}
 	}
-	else {									//몰라 구해야 해
-		if (strcmp(N, M)==1) {				//n이 나눠지는 수
+	else {										//몰라 구해야 해
+		if (strcmp(N, M)==1) {							//n이 나눠지는 수
 			while (1) {
-				minus(N + start, M);						//뺄셈 1회 진행
+				minus(N + start, M);					//뺄셈 1회 진행
 				pos++;
 				if (end != a) {						//end의 위치가 끝 지점이 아니라면
-					start++;						//뺄셈이 끝났으니 시작,끝 위치 갱신
+					start++;					//뺄셈이 끝났으니 시작,끝 위치 갱신
 					end++;
-					N[start] += N[start - 1] * 10;	//이전 시작점에 남은 값을 다음 연산을 위해 이동
+					N[start] += N[start - 1] * 10;			//이전 시작점에 남은 값을 다음 연산을 위해 이동
 				}
 				else break;
 			}
 		}
-		else if (strcmp(N, M) == -1) {		//m이 나눠지는 수
+		else if (strcmp(N, M) == -1) {						//m이 나눠지는 수
 			while (1) {
 				minus(M + start, N);
 				pos++;
@@ -137,7 +145,7 @@ void solve() {
 				else break;
 			}
 		}
-		else {								//n과 m은 같은 수  -> 1을 출력
+		else {									//n과 m은 같은 수  -> 1을 출력
 			printf("1\n");
 			return;
 		}
