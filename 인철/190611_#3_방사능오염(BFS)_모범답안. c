@@ -1,0 +1,61 @@
+#include <stdio.h>
+int Y, X, sx, sy;
+int a[1000 + 10][1000 + 10];
+int sol, cnt;
+struct Zerg
+{
+	int x, y, v;
+}q[1000 * 1000 + 10];;
+int rp, wp;
+int dy[] = { 0,1,0,-1 };
+int dx[] = { -1,0,1,0 };
+
+
+int BFS(void)
+{
+	int nx, ny;
+	struct Zerg data;
+
+	data.y = sy, data.x = sx, data.v = 3;
+	q[wp++] = data;
+	a[data.y][data.x] = 0;
+	cnt--;
+	while (rp < wp)
+	{
+		data = q[rp++];
+		for (int k = 0; k < 4; k++)
+		{
+			nx = data.x + dx[k], ny = data.y + dy[k];
+
+			if (ny > 0 && ny <= Y && nx > 0 && nx <= X && a[ny][nx] == 1)
+			{
+				q[wp].y = ny, q[wp].x = nx, q[wp++].v = data.v + 1;
+				a[ny][nx] = data.v;
+				cnt--;
+			}
+		}
+	}
+	return data.v;
+}
+
+int main(void)
+{
+	int i, j;
+	scanf("%d %d", &X, &Y);
+	for (i = 1; i <= Y; i++)
+	{
+		for (j = 1; j <= X; j++)
+		{
+			scanf("%1d", &a[i][j]);
+			cnt += a[i][j];
+		}
+	}
+	scanf("%d %d", &sx, &sy);
+	sol = BFS();
+
+
+	printf("%d\n", sol);
+	printf("%d", cnt);
+	return 0;
+
+}
