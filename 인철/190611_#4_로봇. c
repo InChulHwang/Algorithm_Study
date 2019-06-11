@@ -1,0 +1,146 @@
+#define _CRT_SECURE_NO_WARNINGS
+
+#include<stdio.h>
+#include<malloc.h>
+
+
+int N, M, a, b, dir;
+int end_r, end_c, end_d;
+int n_r, n_c, n_d;
+int map[105][105];
+int visited[105][105][5];
+int dr[] = { 0, 0,0,1,-1 };
+int dc[] = { 0, 1,-1,0,0 };
+int q_size;
+int time;
+int tmp;
+
+typedef struct queue {
+	int r, c, d;
+	struct queue* next;
+}QUEUE;
+
+QUEUE* q;
+QUEUE* Wptr = NULL;
+QUEUE* Rptr = NULL;
+
+void q_push(int row, int col, int dir) {
+	QUEUE* d;
+	d = (QUEUE*)calloc(1, sizeof(QUEUE));
+	d->r = row;
+	d->c = col;
+	d->d = dir;
+	d->next = NULL;
+
+	if (q != NULL) {
+		q->next = d;
+		q = d;
+		Wptr = d;
+	}
+	else {
+		q = d;
+		Wptr = d;
+		Rptr = d;
+	}return;
+}
+void q_pop() {
+	if (q == NULL) return;
+	else {
+		QUEUE* d = Rptr;
+		n_r = d->r;
+		n_c = d->c;
+		n_d = d->d;
+		Rptr = Rptr->next;
+		if (Rptr == NULL) {
+			Wptr = NULL;
+			q = NULL;
+		}
+		free(d);
+	}
+}
+int DIR_R(int d) {
+	if (d == 1) return 3;
+	else if (d == 2) return 4;
+	else if (d == 3) return 2;
+	else return 1;
+}
+int DIR_L(int d) {
+	if (d == 1) return 4;
+	else if (d == 2) return 3;
+	else if (d == 3) return 1;
+	else return 2;
+}
+
+int main() {
+	scanf("%d %d", &M, &N);
+	for (int i = 1; i < M + 1; i++)
+		for (int j = 1; j < N + 1; j++) {
+			scanf("%d", &map[i][j]);
+		}
+
+	scanf("%d %d %d", &a, &b, &dir);
+	scanf("%d %d %d", &end_r, &end_c, &end_d);
+
+	q_push(a, b, dir);
+	q_size++;
+	visited[a][b][dir] = 1;
+
+	while (q) {
+		int sz = q_size;
+		
+
+		//Print();
+
+
+		while (sz--) {
+			q_pop();
+			q_size--;
+
+
+			if (n_r == end_r && n_c == end_c && n_d == end_d) {
+				printf("%d\n", time);
+				return 0;
+			}
+
+			int nr = n_r, nc = n_c;
+			for (int k = 0; k < 3; k++) {
+				//1칸~3칸 전진 - 회전은 안하고 이동만 한다.
+				//1칸에서 막히면 2,3칸을 2칸에서 막히면 3칸은 당연히 못간다.
+				nr += dr[n_d], nc += dc[n_d];
+				if (0 < nr && nr < M + 1 && 0 < nc && nc < N + 1) {
+					//막혀있는 위치라면 무조건 갈 수 없다.
+					if (map[nr][nc] == 1) break;
+					//막혀있지 않다면...
+					else {
+						//방문하지 않은 곳이면 이동!
+						if (visited[nr][nc][n_d] == 0) {
+							visited[nr][nc][n_d] = 1;
+							q_push(nr, nc, n_d);
+							q_size++;
+						}
+						//방문 한 곳이라면 일단 막히지 않았으니 진행
+						else{
+							continue;
+						}
+					}
+				}
+				else break;
+			}
+			//오른쪽 회전 - 회전만 하고 이동은 안한다.
+			int nd = DIR_R(n_d);
+			if (map[n_r][n_c] == 0 && visited[n_r][n_c][nd] == 0) {
+				visited[n_r][n_c][nd] = 1;
+				q_push(n_r, n_c, nd);
+				q_size++;
+			}
+			//왼쪽 회전 - 회전만 하고 이동은 안한다.
+			nd = DIR_L(n_d);
+			if (map[n_r][n_c] == 0 && visited[n_r][n_c][nd] == 0) {
+				visited[n_r][n_c][nd] = 1;
+				q_push(n_r, n_c, nd);
+				q_size++;
+			}
+		}
+		time++;
+	}
+}
