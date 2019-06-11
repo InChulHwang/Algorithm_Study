@@ -81,60 +81,43 @@ int main() {
 	scanf("%d %d %d", &a, &b, &dir);
 	scanf("%d %d %d", &end_r, &end_c, &end_d);
 
-	q_push(a, b, dir);
+
+	q_push(a, b, dir);								//초기값에 대한 처리
 	q_size++;
 	visited[a][b][dir] = 1;
 
-	while (q) {
+	while (q) {									//BFS실행
 		int sz = q_size;
-		
-
-		//Print();
-
-
 		while (sz--) {
-			q_pop();
-			q_size--;
-
-
-			if (n_r == end_r && n_c == end_c && n_d == end_d) {
+			q_pop();							
+			q_size--;			
+			if (n_r == end_r && n_c == end_c && n_d == end_d) {		//목적지에 도착했으면 출력후 종료
 				printf("%d\n", time);
 				return 0;
 			}
-
-			int nr = n_r, nc = n_c;
-			for (int k = 0; k < 3; k++) {
-				//1칸~3칸 전진 - 회전은 안하고 이동만 한다.
-				//1칸에서 막히면 2,3칸을 2칸에서 막히면 3칸은 당연히 못간다.
-				nr += dr[n_d], nc += dc[n_d];
-				if (0 < nr && nr < M + 1 && 0 < nc && nc < N + 1) {
-					//막혀있는 위치라면 무조건 갈 수 없다.
-					if (map[nr][nc] == 1) break;
-					//막혀있지 않다면...
-					else {
-						//방문하지 않은 곳이면 이동!
-						if (visited[nr][nc][n_d] == 0) {
+			int nr = n_r, nc = n_c;						//다음 위치에 사용될 변수 계산
+			for (int k = 0; k < 3; k++) {					//앞으로 1~3칸 이동
+				nr += dr[n_d], nc += dc[n_d];				
+				if (0 < nr && nr < M + 1 && 0 < nc && nc < N + 1) {	//범위 안에 있는지 판단
+					if (map[nr][nc] == 1) break;			//막혀있는 위치라면 무조건 갈 수 없다.
+					else {						//막혀있지 않다면...
+						if (visited[nr][nc][n_d] == 0) {	//방문하지 않은 곳이면 이동!
 							visited[nr][nc][n_d] = 1;
 							q_push(nr, nc, n_d);
 							q_size++;
 						}
-						//방문 한 곳이라면 일단 막히지 않았으니 진행
-						else{
-							continue;
-						}
+						else continue;				//방문 한 곳이라면 일단 막히지 않았으니 진행						
 					}
 				}
-				else break;
+				else break;						//범위 밖이면 바로 종
 			}
-			//오른쪽 회전 - 회전만 하고 이동은 안한다.
-			int nd = DIR_R(n_d);
+			int nd = DIR_R(n_d);						//오른쪽 회전 - 회전만 하고 이동은 안한다.
 			if (map[n_r][n_c] == 0 && visited[n_r][n_c][nd] == 0) {
 				visited[n_r][n_c][nd] = 1;
 				q_push(n_r, n_c, nd);
 				q_size++;
 			}
-			//왼쪽 회전 - 회전만 하고 이동은 안한다.
-			nd = DIR_L(n_d);
+			nd = DIR_L(n_d);						//왼쪽 회전 - 회전만 하고 이동은 안한다.
 			if (map[n_r][n_c] == 0 && visited[n_r][n_c][nd] == 0) {
 				visited[n_r][n_c][nd] = 1;
 				q_push(n_r, n_c, nd);
