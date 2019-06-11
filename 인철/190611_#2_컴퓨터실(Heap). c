@@ -1,14 +1,14 @@
 #include<stdio.h>
 
 int M, N, Q;
-int people[300010];			            	//들어온 순서대로 앉는 위치를 저장할 배열
-int freind[300010];			            	//친구들이 들어오는 순서를 저장할 배열
-int heap[300010][2];		            	//빈 공간의 시작점, 크기를 max heap으로 저장
+int people[300010];			            			//들어온 순서대로 앉는 위치를 저장할 배열
+int freind[300010];			            			//친구들이 들어오는 순서를 저장할 배열
+int heap[300010][2];		            				//빈 공간의 시작점, 크기를 max heap으로 저장
 int last=0;					                 	//heap의 제일 끝부분을 가리킴
-int start, size, end;
-int use_start, use_size;
+int start, size, end;							//값을 저장 해 놓을 변수
+int use_start, use_size;						//연산에 쓰일 변수
 
-void Heap_push(int st,int si){
+void Heap_push(int st,int si){					
 	
 	int n, p, temp1,temp2;
 	heap[++last][0]= si;
@@ -16,8 +16,8 @@ void Heap_push(int st,int si){
 	n = last;
 	p = n / 2;
 
-	while (1) {
-		if (p == 0) return;
+	while (1) {							//힙에 push를 할 때 조심해야 할 점은 공간의 크기가 같을 경우
+		if (p == 0) return;					//왼쪽에 있는 공간이 우선순위가 높다는 것 이다.
 		if ((heap[n][0]> heap[p][0]) || (heap[n][0]==heap[p][0] && heap[n][1]<heap[p][1])) {
 			temp1 = heap[n][0];
 			temp2 = heap[n][1];
@@ -43,7 +43,7 @@ void Heap_pop() {
 	int p, n1, n2, temp1, temp2;
 	p = 1; n1 = 2; n2 = 3; int c;
 
-	while (n1 <= last) {
+	while (n1 <= last) {						//pop을 할 때에도 값이 크거나 혹은 같으면서 왼쪽인 경우를 따진다
 		if (last == n1) c = n1;
 		else c = (heap[n1][0] > heap[n2][0] || (heap[n1][0]==heap[n2][0] && heap[n1][1]<heap[n2][1])) ? n1 : n2;
 
@@ -69,16 +69,13 @@ int main() {
 	for (int i = 1; i < N+1; i++) {
 		scanf("%d", &l);
 		people[i] = l;
-
-		//처음 위치. 시작부분에 컴퓨터가 없을 수 있다.
-		if (start == 0) {
+		
+		if (start == 0) {					//처음 위치. 시작부분에 컴퓨터가 없을 수 있다.
 			if (l > 1) Heap_push(1, l - 1);
 			start = l;
-		}
-		//두번째 이상이기에 지금 위치가 end로써 push
-		//그 후 지금 위치를 start로 바꾼다.
-		else {
-			Heap_push(start + 1, l - start - 1);
+		}		
+		else {							//두번째 이상이기에 지금 위치가 end로써 push
+			Heap_push(start + 1, l - start - 1);		//그 후 지금 위치를 start로 바꾼다.
 			start = l;
 		}
 	}
@@ -89,8 +86,8 @@ int main() {
 		freind[i]=l;
 	}
 
-	int mid;
-
+	int mid;							//사람이 들어갈 자리를 정해줄 변수 mid
+									//mid 계산 메커니즘은 잘 생각하
 	for (int i = 1; i < M+1; i++) {
 		if (i <= N) continue;
 		else {
@@ -102,8 +99,7 @@ int main() {
 			if (size / 2) Heap_push(mid + 1, size / 2);
 			people[i] = mid;
 		}
-	}
-	
+	}	
 	for (int i = 1; i < Q + 1; i++)
 		printf("%d\n",people[freind[i]]);
 	   
