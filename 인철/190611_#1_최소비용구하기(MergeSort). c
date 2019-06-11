@@ -1,0 +1,46 @@
+#include<stdio.h>
+#include<malloc.h>
+
+int N;
+int arr[5010];
+int temp[5010];
+int sum;
+int tot;
+
+void Sort_Merge(int s, int e)
+{
+	int idx1, idx2, idxtmp;
+	if (s >= e) return;
+	int m = (s + e) / 2;
+
+	Sort_Merge(s, m);
+	Sort_Merge(m + 1, e);
+
+	idx1 = s; idx2 = m + 1; idxtmp = s;
+	while (idx1 <= m && idx2 <= e) {
+		if (arr[idx1] < arr[idx2]) temp[idxtmp++] = arr[idx1++];
+		else temp[idxtmp++] = arr[idx2++];
+	}
+
+	if (idx1 <= m) while (idx1 <= m) temp[idxtmp++] = arr[idx1++];
+	else while (idx2 <= e) temp[idxtmp++] = arr[idx2++];
+
+	for (idxtmp = s; idxtmp <= e; idxtmp++) arr[idxtmp] = temp[idxtmp];
+	return;
+}
+
+int main() {
+	scanf("%d", &N);
+	for (int i = 0; i < N; i++)
+		scanf("%d", &arr[i]);
+	int n = N - 1;
+	while (n--) {
+		Sort_Merge(0, N - 1);
+		sum = arr[0] + arr[1];
+		arr[0] = sum;
+		arr[1] = 2147483647;
+		tot += sum;
+	}
+
+	printf("%d", tot);
+}
