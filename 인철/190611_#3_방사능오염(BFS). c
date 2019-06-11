@@ -6,9 +6,9 @@
 int N, M, a, b;
 int map[105][105];
 int visited[105][105];
-int time = 2;                 //경과 시간
-int num;                    //초기 저글링의 수
-int v_row, v_col;           //현재 탐색중인 위치
+int time = 2;             		 			//경과 시간
+int num;                					//초기 저글링의 수
+int v_row, v_col;						//현재 탐색중인 위치
 int dr[4] = { 1,0,-1,0 };
 int dc[4] = { 0,-1,0,1 };
 char arr[110];
@@ -65,25 +65,21 @@ int main() {
 			map[i][j + 1] = arr[j] - '0';
 			if (map[i][j + 1] == 1) num++;
 		}
-	}
-	//[b][a]에 방사능 오염
-	scanf("%d %d", &a, &b);
-	visited[b][a] = 1;
+	}	
+	scanf("%d %d", &a, &b);						//[b][a]에 방사능 오염
+	visited[b][a] = 1;						//초기값 설정
 	Q_push(b, a);
 	q_size++;
 
-	while (q != NULL) {
+	while (q != NULL) {						//BFS시작
 		int sz = q_size;
-
 		while (sz--) {
-
 			Q_pop();
 			q_size -= 1;
 			num--;
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < 4; i++) {			//4방향 탐색
 				int rr = v_row + dr[i];
 				int cc = v_col + dc[i];
-
 				if (0 < rr && rr <= M && 0 < cc && cc <= N) {
 					if (map[rr][cc] == 1 && visited[rr][cc] == 0) {
 						visited[rr][cc] = 1;
