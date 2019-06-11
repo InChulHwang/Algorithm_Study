@@ -29,8 +29,8 @@ void Sort_Merge(int s, int e)
 	return;
 }
 
-int main() {
-	scanf("%d", &N);
+int main() {						//가장 작은것 두개의 합을 다시 전체 묶음속에 넣는다
+	scanf("%d", &N);				//위 방법을 1개가 남을때 까지 반복 해야 한다.
 	for (int i = 0; i < N; i++)
 		scanf("%d", &arr[i]);
 	int n = N - 1;
