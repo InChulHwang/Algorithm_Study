@@ -1,0 +1,101 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<malloc.h>
+
+
+int N, M, a, b;
+int map[105][105];
+int visited[105][105];
+int time = 2;                 //경과 시간
+int num;                    //초기 저글링의 수
+int v_row, v_col;           //현재 탐색중인 위치
+int dr[4] = { 1,0,-1,0 };
+int dc[4] = { 0,-1,0,1 };
+char arr[110];
+int q_size = 0;
+
+typedef struct queue {
+	int r, c;
+	struct queue* next;
+}QUEUE;
+
+QUEUE* q;
+QUEUE* Wptr = NULL;
+QUEUE* Rptr = NULL;
+
+void Q_push(int row, int col) {
+	QUEUE* d;
+	d = (QUEUE*)calloc(1, sizeof(QUEUE));
+	d->r = row;
+	d->c = col;
+	d->next = NULL;
+
+	if (q != NULL) {
+		q->next = d;
+		q = d;
+		Wptr = d;
+	}
+	else {
+		q = d;
+		Wptr = d;
+		Rptr = d;
+	}return;
+}
+
+void Q_pop() {
+	if (q == NULL) return;
+	else {
+		QUEUE* d = Rptr;
+		v_row = d->r;
+		v_col = d->c;
+		Rptr = Rptr->next;
+		if (Rptr == NULL) {
+			Wptr = NULL;
+			q = NULL;
+		}
+		free(d);
+	}
+}
+
+int main() {
+	scanf("%d %d", &N, &M);
+	for (int i = 1; i < M + 1; i++) {
+		scanf("%s", arr);
+		for (int j = 0; j < N; j++) {
+			map[i][j + 1] = arr[j] - '0';
+			if (map[i][j + 1] == 1) num++;
+		}
+	}
+	//[b][a]에 방사능 오염
+	scanf("%d %d", &a, &b);
+	visited[b][a] = 1;
+	Q_push(b, a);
+	q_size++;
+
+	while (q != NULL) {
+		int sz = q_size;
+
+		while (sz--) {
+
+			Q_pop();
+			q_size -= 1;
+			num--;
+			for (int i = 0; i < 4; i++) {
+				int rr = v_row + dr[i];
+				int cc = v_col + dc[i];
+
+				if (0 < rr && rr <= M && 0 < cc && cc <= N) {
+					if (map[rr][cc] == 1 && visited[rr][cc] == 0) {
+						visited[rr][cc] = 1;
+						map[rr][cc] = 0;
+						Q_push(v_row + dr[i], v_col + dc[i]);
+						q_size++;
+					}
+				}
+			}
+		}
+		time++;
+	}
+	printf("%d\n", time);
+	printf("%d\n", num);
+}
