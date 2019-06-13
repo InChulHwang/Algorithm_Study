@@ -1,0 +1,140 @@
+/*
+http://www.codexpert.org:83/problem.php?cid=1124&pid=21
+
+입력 설명
+첫 줄에 N(2≤N≤100)이 들어온다.
+그 다음 줄부터 N개의 줄에 각각 N개씩 M(0≤M≤9)이 공백 없이 들어온다.
+
+출력 설명
+출발점에서 도착점까지 자외선 합의 최소값을 출력한다. 
+
+입력 예시
+3
+041
+253
+620
+
+출력 예시
+8
+
+
+*/
+
+
+#include<stdio.h>
+#include<malloc.h>
+
+
+	int N;
+	int map[110][110];
+	int visited[110][110];
+	int use_r, use_c, use_d;
+	int q_size;
+	int dr[] = { 1,0,-1,0 };
+	int dc[] = { 0,1 ,0,-1};
+
+
+	typedef struct st {
+		int r, c;
+		int data;
+		struct st*next;
+	}QUEUE;
+
+	QUEUE*q;
+	QUEUE*Wptr = NULL;
+	QUEUE*Rptr = NULL;
+
+	void q_push(int row, int col, int data) {
+		QUEUE*d;
+		d = (QUEUE*)calloc(1, sizeof(QUEUE));
+		d->r = row, d->c = col, d->data = data, d->next = NULL;
+		if (q != NULL) {
+			q->next = d;
+			q = d;
+			Wptr = d;
+		}
+		else {
+			q = d;
+			Wptr = d;
+			Rptr = d;
+		}
+	}
+
+	void q_pop() {
+		if (q == NULL) return;
+		else {
+			QUEUE*d = Rptr;
+			use_r = d->r;
+			use_c = d->c;
+			use_d = d->data;
+			Rptr = Rptr->next;
+			if (Rptr == NULL) {
+				q = NULL;
+				Wptr = NULL;
+			}
+			free(d);
+		}
+	}
+
+	void Print() {
+		for (int i = 1; i < N + 1; i++) {
+			for (int j = 1; j < N + 1; j++)
+				printf("%d ", map[i][j]);
+			printf("\n");
+		}
+	}
+
+	int main() {
+		scanf("%d", &N);
+		for (int i = 1; i < N + 1; i++)
+			for (int j = 1; j < N + 1; j++)
+				scanf("%1d", &map[i][j]);
+
+		q_push(1, 1, map[1][1]);
+		q_size++;
+		visited[1][1] = map[1][1];
+
+		while (q) {
+			int sz = q_size;
+			q_pop();
+			q_size--;
+
+			if (use_d != visited[use_r][use_c])continue;
+
+			while (sz--) {
+
+				for (int i = 0; i < 4; i++) {
+					int nr = use_r + dr[i];
+					int nc = use_c + dc[i];
+					if (0 < nr && nr < N + 1 && 0 < nc &&nc < N + 1) {
+
+						//처음 방문하는 좌표이면 데이터를 그대로 대입
+						if (visited[nr][nc] == 0) {
+							visited[nr][nc] = use_d + map[use_r][use_c];
+							if (nr == N && nc == N) continue;
+							q_push(nr, nc, visited[nr][nc]);
+							q_size++;
+						}
+						//이미 데이터가 있는 경우 그 값과 바뀌는 값을 비교하여 대엽
+						else {
+							//입력값이 더 작다면 그 값을 push
+							if (visited[nr][nc] > use_d + map[use_r][use_c]) {
+								visited[nr][nc] = use_d + map[use_r][use_c];
+								if (nr == N && nc == N) continue;
+								q_push(nr, nc, visited[nr][nc]);
+								q_size++;
+							}
+							//입력하는 값이 크다면 그냥 continue
+							else {
+								continue;
+							}
+
+						}
+					}
+				}
+
+			}
+		}
+		printf("%d\n", visited[N][N]);
+		return 0;
+	}
