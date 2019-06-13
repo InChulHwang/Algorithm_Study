@@ -36,37 +36,38 @@ http://www.codexpert.org:83/problem.php?cid=1124&pid=28
 	int use[100000 * 3];
 	int lazy[100000 * 3];
 	int Rs, Re, I, C;
-
+	
+	//lazy 사용을 위한 propagation
 	void propagate(int node, int s, int e) {
-		if (lazy[node]) {
-			if (s != e) {
+		if (lazy[node]) {			//반전이 필요하면
+			if (s != e) {			//leap가 아니면 자식노드에 반전정보 저장
 				lazy[node * 2] ^=1;
 				lazy[node * 2 + 1] ^=1;
 			}
-			use[node] = (e - s + 1)-use[node];
-			lazy[node] = 0;
+			use[node] = (e - s + 1)-use[node];//반전 실행
+			lazy[node] = 0;		
 		}
 	}
-
+	
+	//반전행위를 수행할 함수
 	void Update(int node, int s, int e, int qs,int qe) {
 
 		propagate(node, s, e);
 
-		if (qs <= s && e <= qe) {
-			lazy[node] ^= 1;
+		if (qs <= s && e <= qe) {		//범위 안에 포함이 된다면
+			lazy[node] ^= 1;		//번전여부를 갱신(1이면 반전이 필요한 상황, 0이면 반전이 필요없는 상황)
 			propagate(node, s, e);
 			return;
 		}
-		if (qs > e || s > qe) return;
+		if (qs > e || s > qe) return;		//범위 밖이면 종료
 
 		int m = (s + e) / 2;
-		Update(node * 2, s, m, qs, qe);
-		Update(node * 2 + 1, m + 1, e, qs, qe);
-		use[node] = use[node * 2] + use[node * 2 + 1];
-
-		
+		Update(node * 2, s, m, qs, qe);		//왼쪽 자식노드
+		Update(node * 2 + 1, m + 1, e, qs, qe);	//오른쪽 자식노드
+		use[node] = use[node * 2] + use[node * 2 + 1];	//값 갱신		
 	}
-
+	
+	//값을 구할 함
 	int Query(int node, int s, int e, int qs,int qe) {
 		propagate(node, s, e);
 		if (qs <= s && e <= qe) return use[node];
