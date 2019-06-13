@@ -52,15 +52,15 @@ void solve(void)
 	int tmp, sum = 987654321;
 	while (s < e)
 	{
-		tmp = a[s] + a[e];
-		if (ABS(tmp) < sum)
+		tmp = a[s] + a[e];		//두 값을 더한다
+		if (ABS(tmp) < sum)		//기존의 값보다 작다면?
 		{
 			small = a[s];
 			big = a[e];
 			sum = ABS(tmp);
 		}
-		if (tmp > 0) e--;
-		else if (tmp < 0) s++;
+		if (tmp > 0) e--;		//더한 값이 양수라면 +쪽의 값을 더 작은것으로
+		else if (tmp < 0) s++;		//음수라면 -쪽의 값을 더 큰것으
 		else return;
 	}
 	return;
