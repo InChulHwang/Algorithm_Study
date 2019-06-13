@@ -41,10 +41,10 @@ int main(void) {
 
 	double max = 0, mul = 1;
 
-	for (int i = 1; i < N + 1; i++) {
+	for (int i = 1; i < N + 1; i++) {		
 		scanf("%lf", &arr[i]);
-		if (mul > 1.0) mul *= arr[i];
-		else mul = arr[i];
+		if (mul > 1.0) mul *= arr[i];		//곱해야 할 값이 1 보다 크면 곱한다
+		else mul = arr[i];			//그러나 작다면 곱한 결과가 더 작아지므로 지금의 값을 mul에 저장
 		max = MAX(mul, max);
 	}
 	printf("%.3f",max);
