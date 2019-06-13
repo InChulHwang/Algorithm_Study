@@ -39,32 +39,35 @@ http://www.codexpert.org:83/problem.php?cid=1124&pid=26
 	int lazy[50000 * 3];
 	int a, b;
 	   
+	//주어진 입력값에 대한 값을 출력하기 위한 함수
 	int Query(int n, int s, int e, int qs, int qe)
 	{
-		int m, l, r;
-		if (qs <= s && e <= qe) return use[n];
-		if (e < qs || qe < s) return 0;
+		int m, l, r;				
+		if (qs <= s && e <= qe) return use[n];		//범위 안에 온전히 포함된다면 그 값을 반환
+		if (e < qs || qe < s) return 0;			//범위 안에 완전히 없다면 0을 반환
+		
+		//위에서 반환 되지 않았으므로 오른쪽, 왼쪽의 값으로 나눠 계산을 해야 한다.
+		m = (s + e) / 2;				//체크값을 반으로 나누고
 
-		m = (s + e) / 2;
+		l = Query(n * 2, s, m, qs, qe);			//왼쪽 값에 대해 계산
+		r = Query(n * 2 + 1, m + 1, e, qs, qe);		//오른쪽 값에 대해 계산
 
-		l = Query(n * 2, s, m, qs, qe);
-		r = Query(n * 2 + 1, m + 1, e, qs, qe);
-
-		return MAX(l, r);
+		return MAX(l, r);				//왼쪽과 오른쪽 값중 큰것을 반환
 	}
-
+	
+	//Segment Tree 를 처음 생성하는 함
 	void init(int n, int s, int e)	{
 		int i, d;
 		int m = (s + e) / 2;
 		int t;
-		if (s == e)		{
-			use[n] = map[s];
+		if (s == e){					//구간의 시작과 끝이 같아지는 지점 즉  leap node 도착
+			use[n] = map[s];			//값을 저장
 			return;
 		}
-		init(n * 2, s, m);
+		init(n * 2, s, m);				//재귀적으로 왼쪽자식, 오른쪽 자식에 대해 입력
 		init(n * 2 + 1, m + 1, e);
 
-		use[n] = MAX(use[n * 2], use[n * 2 + 1]);
+		use[n] = MAX(use[n * 2], use[n * 2 + 1]);	//왼쪽,오른쪽 자식중 큰 값을 구간의 대표값으로 설
 	}
 
 
