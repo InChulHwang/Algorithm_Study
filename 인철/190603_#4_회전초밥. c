@@ -65,14 +65,14 @@ int solve(void)
 	cnt = 1;
 	for (i = 0; i < k; i++)
 	{
-		if (chk[a[i]] == 0)cnt++;
-		chk[a[i]]++;
-		a[N + i] = a[i];
+		if (chk[a[i]] == 0)cnt++;	//해당 번호의 초밥을 먹었다면 cnt++
+		chk[a[i]]++;			//먹었으므로 1로 표시
+		a[N + i] = a[i];		//지금 초바
 	}
 	for (i = 0; i < N; i++)
 	{
 		max = MAX(cnt, max);
-		chk[a[i]]--;
+		chk[a[i]]--;			
 		if (chk[a[i]] == 0)cnt--;
 
 		if (chk[a[i + k]] == 0)cnt++;
