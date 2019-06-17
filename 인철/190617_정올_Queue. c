@@ -1,0 +1,66 @@
+//http://jungol.co.kr/xpert/viewp.php?bo_table=&bo_table&id=1697&sca=2060
+
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<malloc.h>
+
+int N;
+char s;
+int q_size;
+
+typedef struct queue {
+	int data;
+	struct queue* next;
+}QUEUE;
+
+QUEUE* Wptr = NULL;
+QUEUE* Rptr = NULL;
+
+void push(int data) {
+	QUEUE* d = (QUEUE*)calloc(1, sizeof(QUEUE));
+	d->data = data;
+	d->next = NULL;
+	if (Wptr){
+		Wptr->next = d;
+		Wptr = Wptr->next;
+	}
+	else {
+		Wptr = d;
+		Rptr = d;
+	}
+	q_size++;
+}
+
+void pop() {
+
+	QUEUE* d;
+
+	if (Rptr) {
+		d = Rptr;
+		if (d->next) Rptr = Rptr->next;
+		else Rptr = NULL, Wptr = NULL;
+		printf("%d\n",d->data);
+		q_size--;
+	}
+	else {
+		printf("empty\n");
+	}
+}
+
+int main() {
+	scanf("%d",&N);
+	while (N--) {
+		scanf(" %c",&s);
+		if (s == 'i') {
+			int n;
+			scanf("%d",&n);
+			push(n);
+		}
+		else if (s == 'o') {
+			pop();
+		}
+		else {
+			printf("%d\n",q_size);
+		}
+	}
+}
