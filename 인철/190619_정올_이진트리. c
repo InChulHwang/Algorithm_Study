@@ -1,0 +1,107 @@
+/*
+http://jungol.co.kr/xpert/viewp.php?bo_table=&bo_table&id=1716&sca=50
+
+일반적인 이진트리와 입력, 출력 부분이 조금 다르다.
+
+입력 부분에 있어서는 prev가 비어있다면 그곳에 입력, 그렇지 않다면 
+값이 -1인지 아닌지를 본다. -1이 아니라면 그 위치에서 재귀호출
+-1이라면 next에서 시작한다.
+next에서도 메커니즘은 동일하다.
+이 메커니즘은 prev와 next만을 보기 때문에 root노드는 보지 못한다.
+그렇기에 root 노드만 처음에 따로 입력을 해 준다.
+
+출력 부분에 있어서는, prev값 - next값 - 중앙값 순서로 출력을 해야 하는데
+prev의 값이 있다면 출력을 하고, 없다면 next 로 넘겨 탐색을 한다
+이 과정을 반복하면 root노드를 제외하고는 출력이 가능하기에 
+마지막에 root노드만 따로 출력을 해 주면 된다.
+*/
+
+
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<malloc.h>
+
+typedef struct bin {
+	int data;
+	struct bin* prev;
+	struct bin* next;
+}BIN;
+
+BIN* root;
+int ck;
+
+void input(BIN* start, BIN* head) {
+
+	if (ck) return;
+
+	if (start->prev == NULL) {
+		start->prev = head;
+		ck = 1;
+		//printf("prev 에 저장. data : %d\n", head->data);
+		return;
+	}
+	else if (start->prev->data != -1) {
+		//printf("prev 로 이동. data : %d\n", head->data);
+		input(start->prev, head);
+		if (ck)return;
+	}
+
+	if (ck)return;
+
+	if (start->next == NULL) {
+		start->next = head;
+		ck = 1;
+		//printf("next 에 저장. data : %d\n", head->data);
+		return;
+	}
+	else if (start->next->data != -1) {
+		//printf("next 로 이동. data : %d\n", head->data);
+		input(start->next, head);
+		if (ck)return;
+	}
+
+}
+
+void Print(BIN*head) {
+	if (head->data == -1) return;
+	
+	if (head->prev->data != -1) {
+		Print(head->prev);
+		printf("%d ", head->prev->data);
+		if (head->next->data != -1) {
+			Print(head->next);
+			printf("%d ", head->next->data);
+		}
+		//printf("%d ",head->data);
+	}
+	else {
+		if (head->next->data != -1) {
+			Print(head->next);
+			printf("%d ", head->next->data);
+		}
+	}
+}
+
+int main() {
+	int data[25];
+	int i = 1;
+	root = (BIN*)calloc(1, sizeof(BIN));
+	scanf("%d",&root->data);
+	root->prev = NULL;
+	root->next = NULL;
+	//printf("root 의 값 : %d\n",root->data);
+	do{	
+		scanf("%d", &data[i]);
+		BIN* d;
+		d = (BIN*)calloc(1, sizeof(BIN));
+		d->data = data[i];
+		d->prev = NULL;
+		d->next = NULL;
+		ck = 0;
+		input(root, d);		
+		//printf("%d\n",root->data);
+		i++;
+	} while ((getc(stdin) == ' '));
+	Print(root);
+	printf("%d\n",root->data);
+}
