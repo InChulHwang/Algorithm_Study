@@ -1,0 +1,105 @@
+//https://www.swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AWtIpWq6uIcDFASy&categoryId=AWtIpWq6uIcDFASy&categoryType=CODE
+
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<malloc.h>
+
+int T, N, M;
+int map[770][770];
+int max;
+
+int solve2(int row, int col, int size) {
+
+	int a = row, b = col;
+	int sz = size - 1;
+	while (sz--) {
+		if (map[row + 1][col - 1] && row + 1 < N && col  > 0) {
+			row += 1;
+			col -= 1;
+		}
+		else return 0;
+	}
+
+	sz = size - 1;
+	while (sz--) {
+		if (map[row - 1][col - 1] && row > 0 && col  > 0) {
+			row -= 1;
+			col -= 1;
+		}
+		else return 0;
+	}
+
+	sz = size - 1;
+	while (sz--) {
+		if (map[row - 1][col + 1] && row > 0 && col+1 < M) {
+			row -= 1;
+			col += 1;
+		}
+		else return 0;
+	}
+
+	return size;
+}
+
+//size를 결정하는 함수 부분이다. 
+//이 함수에서 size를 구하고 구한 size를 토대로 마름모가 그려 지는지를 확인한다.
+//size를 구할 때 기존의 max보다 작은 size 라면 확인을 해 볼 필요가 없다.
+void solve1(int row, int col) {
+	//마름모의 크기를 저장할 변수
+	int size = 1;
+	//다음 위치에 1이 있다면 쭉쭉 진행하며 size++
+	while (1) {
+		if (map[row + 1][col + 1] && row + 1 < N && col + 1 < M) {
+			size++; 
+			row += 1;
+			col += 1;
+		}
+		else break;
+	}
+	
+	//size가 기존의 max보다 작다면 진행을 할 필요가 없다.
+	if (size > max) {
+		//기존의 max보다 크다면 마름모가 주어진 범위 안에 오는지 확인
+		//범위를 벗어나는 마름모라면 크기를 1씩 줄이며 재 확인
+		while (N-row < size-1 || col < size * 2-1) {
+			row --;
+			col --;
+			size--;
+		}
+		if (size < max) return;
+		int sol = solve2(row, col, size);
+		while (sol == 0 && row>0 && col>0 && size>max) {
+			row --;
+			col --;
+			size--;
+			sol = solve2(row, col, size);
+			if (sol) break;
+			//printf("loop! %d, %d  : %d   -> %d\n",row+1,col+1,size,sol);
+		}
+		if (max < sol) {
+			//printf("위치 : %d, %d    기존 max : %d    갱신 max : %d\n",a+1,b+1,max,sol);
+			max = sol;
+		}
+	}
+}
+
+int main() {
+	scanf("%d",&T);
+	for (int t = 0; t < T; t++) {
+		scanf("%d %d",&N,&M);
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < M; j++)
+				scanf("%1d",&map[i][j]);
+
+		max = 0;
+
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < M; j++) {
+				if (map[i][j] == 1) {
+					solve1(i, j);
+				}
+			}
+
+		printf("#%d %d\n", t + 1, max);
+	}
+}
