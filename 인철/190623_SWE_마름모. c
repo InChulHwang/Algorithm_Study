@@ -8,9 +8,12 @@ int T, N, M;
 int map[770][770];
 int max;
 
+//마름모가 그려지는지 가능 여부를 판단하는 함수
+//1방향은 이미 한 상태이므로, 2 3 4 방향만 확인하면 된다.
 int solve2(int row, int col, int size) {
 
-	int a = row, b = col;
+	//loop를 돌 횟수를 size-1로 선언
+	//만들어지지 않는다면 바로 0을 return
 	int sz = size - 1;
 	while (sz--) {
 		if (map[row + 1][col - 1] && row + 1 < N && col  > 0) {
@@ -37,7 +40,7 @@ int solve2(int row, int col, int size) {
 		}
 		else return 0;
 	}
-
+	//만들어 진다면 이때의 size return
 	return size;
 }
 
@@ -61,21 +64,26 @@ void solve1(int row, int col) {
 	if (size > max) {
 		//기존의 max보다 크다면 마름모가 주어진 범위 안에 오는지 확인
 		//범위를 벗어나는 마름모라면 크기를 1씩 줄이며 재 확인
-		while (N-row < size-1 || col < size * 2-1) {
+		while (N-row < size-1 || col < size * 2-2) {
 			row --;
 			col --;
 			size--;
 		}
-		if (size < max) return;
+		//size가 어차피 작다면 그냥 return
+		if (size <= max) return;
+		//sol이 0이면 불가능, 그렇지 않다면 가능한 길이 이다.
 		int sol = solve2(row, col, size);
-		while (sol == 0 && row>0 && col>0 && size>max) {
+		//sol이 0이라면 값을 1씩 줄여서 다시 시도
+		while (sol == 0 && row>0 && col>0 && size-1>max) {
 			row --;
 			col --;
 			size--;
 			sol = solve2(row, col, size);
+			//sol의 값이 0이 아닌게 나오면 break
 			if (sol) break;
 			//printf("loop! %d, %d  : %d   -> %d\n",row+1,col+1,size,sol);
 		}
+		//sol을 토대로 max 갱신
 		if (max < sol) {
 			//printf("위치 : %d, %d    기존 max : %d    갱신 max : %d\n",a+1,b+1,max,sol);
 			max = sol;
@@ -96,6 +104,10 @@ int main() {
 		for (int i = 0; i < N; i++)
 			for (int j = 0; j < M; j++) {
 				if (map[i][j] == 1) {
+					//이 부분이 없다면 시간초과가 뜬다.
+					//애초에 처음부터 이 위치에서 가능한 가장 큰 값에 대하여 
+					//진행을 했을 때 기존의 max를 바꿀 수 없다면 할 필요가 없다.
+					if (N - i < max*2 - 2 || j < max || M-j<max-1) continue;
 					solve1(i, j);
 				}
 			}
