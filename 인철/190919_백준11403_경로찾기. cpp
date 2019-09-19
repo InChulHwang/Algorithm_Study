@@ -1,0 +1,72 @@
+//https://www.acmicpc.net/problem/11403
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<queue>
+#include<malloc.h>
+
+using namespace std;
+
+int N,n;
+int map[101][101];
+int visited[101];
+int sol[101][101];
+
+queue<int> q;
+
+void search();
+void bfs(int X);
+
+int main(){
+	scanf("%d", &N);
+
+	for (int i = 0; i < N; i++){
+		for (int j = 0; j < N; j++){
+			scanf("%d", &map[i][j]);
+		}
+	}
+
+	search();
+
+	for (int i = 0; i < N; i++){
+		for (int j = 0; j < N; j++){
+			printf("%d ", sol[i][j]);
+		}
+		printf("\n");
+	}		
+}
+
+//s번 정점부터 그 뒤로 탐색을 실행. 그와 연결된 정점들을 쭉 이어나가서 visited 체크
+void search(){
+	for (int i = 0; i < N; i++){
+		bfs(i);
+		memset(visited,0,sizeof(visited));
+	}
+}
+
+void bfs(int X){
+
+	for (int i = 0; i < N; i++){
+		if (map[X][i] && !visited[i]){
+			sol[X][i] = 1;
+			visited[i] = 1;
+			q.push(i);
+		}
+	}
+
+	while (!q.empty()){
+		int s = q.front();
+		q.pop();
+
+		for (int i = 0; i < N; i++){
+			if (map[s][i] && !visited[i]){
+				sol[X][i] = 1;
+				visited[i] = 1;
+				q.push(i);
+			}
+		}
+	}
+}
