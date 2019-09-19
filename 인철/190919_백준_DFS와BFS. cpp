@@ -1,0 +1,96 @@
+//https://www.acmicpc.net/problem/1260
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include<iostream>
+#include<cstdio>
+#include<cstring>
+#include<queue>
+#include<malloc.h>
+
+using namespace std;
+
+int N, M, V;
+int s, e;
+bool visited1[1001];
+bool visited2[1001];
+int map[1001][1001];
+int ck;
+
+queue<int> q;
+
+//typedef struct arr{
+//	int data;
+//	struct arr *next;
+//}ARR[1001];
+
+void dfs(int T,int S);
+void bfs();
+
+int main(){
+	scanf("%d %d %d", &N, &M, &V);
+	for (int i = 0; i < M; i++){
+		scanf("%d %d",&s,&e);
+		map[s][e] = map[e][s] = 1;
+	}
+	
+	ck = 0;
+	dfs(1,V);
+
+	printf("\n");
+
+	visited2[V] = true;
+	q.push(V);
+	bfs();
+
+}
+
+//DFS 지금까지 탐색한 정점의 수 T , 현재 탐색을 시작할 정점 S
+void dfs(int T,int S){
+
+	if (ck) return;
+
+	//탐색을 시작하는 정점에 방문표시 후 출력
+	visited1[S] = true;
+	printf("%d ",S);
+
+	//지금까지 탐색한 정점의 수가 전체 정점의 수와 같다면 DFS 끝
+	if (T == N){
+		ck = 1;	
+		return;
+	}
+
+	//탐색을 시작할 정점에 연결된 정점들 중 값이 작은 점들부터 탐색
+	for (int i = 1; i < N + 1; i++){
+		//연결된 정점이고, 방문하지 않은 점 이라면 방문표시 후 그 점부터 다시 실행
+		if (map[S][i] && !visited1[i]){
+			visited1[i] = true;
+			dfs(T + 1, i);
+			if (ck) return;
+		}
+	}
+}
+
+void bfs(){
+	
+	s = q.front();
+	printf("%d ",s);
+
+	while (!q.empty()){
+
+		int sz = q.size();
+
+		while (sz--){
+			s = q.front();
+			q.pop();
+			for (int i = 1; i < N + 1; i++){
+				if (map[s][i] && !visited2[i]){
+					visited2[i] = true;
+					q.push(i);
+					printf("%d ", i);
+				}
+			}
+		}
+	}
+
+}
