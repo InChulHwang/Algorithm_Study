@@ -1,0 +1,63 @@
+//https://www.acmicpc.net/problem/17779
+
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+
+using namespace std;
+
+int T, N, area1, area2, area3, area4, area5, area,MAX,MIN,SOL;
+int map[22][22];
+
+void input();
+void find_sol();
+void cal_area(int r, int c, int x, int y);
+
+int main() {
+	input();
+	find_sol();
+	cout << SOL << endl;
+}
+
+void input() {
+	cin >> N;
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++) {
+			cin >> map[i][j];
+			area += map[i][j];
+		}
+	SOL = 2147483647;
+}
+
+void find_sol() {
+	for (int i = 0; i < N - 2; i++)
+		for (int j = 1; j < N - 1; j++)
+			for (int a = 1; a < N - 1; a++)
+				for (int b = 1; b < N - 1; b++) 
+					if ((a + b <= N) && (j >= a) && (j + b < N) && (i + a + b < N)) {
+						cal_area(i, j, a, b);
+						if (area1 > MAX) MAX = area1;
+						if (area2 > MAX) MAX = area2;
+						if (area3 > MAX) MAX = area3;
+						if (area4 > MAX) MAX = area4;
+						if (area5 > MAX) MAX = area5;
+						if (area1 < MIN) MIN = area1;
+						if (area2 < MIN) MIN = area2;
+						if (area3 < MIN) MIN = area3;
+						if (area4 < MIN) MIN = area4;
+						if (area5 < MIN) MIN = area5;
+						if (SOL > MAX - MIN)SOL = MAX - MIN;
+					}
+}
+
+void cal_area(int r, int c, int x, int y) {
+	area1 = area2 = area3 = area4 = 0;
+	MAX = 0, MIN = 2147483647;
+	for (int i = 0; i < N; i++)
+		for (int j = 0; j < N; j++) {
+			if ((j <= c) && (i < r + x) && (i + j < r + c)) area1 += map[i][j];
+			else if ((j > c) && (i <= r + y) && (i - j < r - c)) area2 += map[i][j];
+			else if ((i >= r + x) && (j < c + y - x) && (i - j > r - c + 2 * x)) area3 += map[i][j];
+			else if ((i > r + y) && (j >= c + y - x) && (i + j > r + c + 2 * y)) area4 += map[i][j];
+		}
+	area5 = area - (area1 + area2 + area3 + area4);
+}
