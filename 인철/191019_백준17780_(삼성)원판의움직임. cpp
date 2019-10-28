@@ -1,0 +1,153 @@
+//https://www.acmicpc.net/problem/17780
+
+#define _CRT_SECURE_NO_WARNINGS
+#include<iostream>
+
+using namespace std;
+
+//map의 크기, 드론의 수
+int N, K, SOL, ck;
+int tmp_d, s, e, r, c, d, ur, uc;
+
+typedef struct mm {
+	int d_num[4];      //이 위치에 존재하는 드론의 순차적인 번호
+	int cnt;         //이 위치에 존재하는 드론의 수
+}MAP;
+MAP use_map[15][15];   //드론의 상태를 표시할 map
+int map[15][15];      //바닥과 장애물의 상태를 표시할 map
+
+//dron의 구조체와, 4방향 이동에 쓰일 배열
+typedef struct dd {
+	int row, col, dir;
+}DRON;
+DRON dron[12];
+int dr[5] = { 0,0,0,-1,1 };
+int dc[5] = { 0,1,-1,0,0 };
+
+void input();
+int change_dir(int n);
+void simul();
+void move(int n, int r, int c, int d, int f);
+
+int main() {
+	freopen("input_드론.txt", "r", stdin);
+	input();
+	SOL = 0;
+	int turn = 1002;
+	while (turn--) {
+		simul();
+		SOL++;
+		if (ck) break;
+	}
+	if (SOL > 1000)SOL = -1;
+	cout << SOL << endl;
+}
+
+//map을 입력받는 부분. 1이면 빨간땅, 0이면 일반땅, 2면 장애물(벽)
+void input() {
+	cin >> N >> K;
+	for (int i = 0; i < N + 2; i++) map[i][0] = map[0][i] = map[N + 1][i] = map[i][N + 1] = 2;
+	for (int i = 1; i < N + 1; i++)
+		for (int j = 1; j < N + 1; j++)
+			cin >> map[i][j];
+	//시작시에 한칸에 드론이 두개가 있는 경우는 없으므로 cnt는 1로 해 준다.
+	for (int i = 1; i <= K; i++) {
+		cin >> dron[i].row >> dron[i].col >> dron[i].dir;
+		use_map[dron[i].row][dron[i].col].cnt = 1;
+		use_map[dron[i].row][dron[i].col].d_num[0] = i;
+	}
+}
+
+int change_dir(int n) {
+	if (n == 1)return 2;
+	else if (n == 2) return 1;
+	else if (n == 3) return 4;
+	else if (n == 4) return 3;
+}
+
+void simul() {
+	//모든 드론들을 이동 시킨다.
+	for (int k = 1; k <= K; k++) {
+
+		//먼저 이번에 이동 시키려는 드론의 다음 위치에 무엇이 있는지 봐 본다.
+		d = dron[k].dir;
+		r = dron[k].row;
+		c = dron[k].col;
+		ur = r + dr[d];
+		uc = c + dc[d];
+
+		//이 드론이 제일 아래에 있는지 확인. 아니라면 continue;
+		if (use_map[r][c].d_num[0] != k) continue;
+
+		//일반 땅 일 경우, 이 드론과 그 위에 있는 드론들을 모두 옮긴다.
+		if (map[ur][uc] == 0) {
+			//현재 위치에 드론이 몇개 있는지 확인을 하고, 전부다 옮긴다.
+			e = use_map[r][c].cnt;
+			for (int i = 0; i < e; i++) {
+				tmp_d = use_map[r][c].d_num[i];
+				move(tmp_d, r, c, d, i);
+			}
+		}
+		//빨간 땅 일 경우, 이 드론의 가장 위에 있는 드론부터 이 드론까지 모두 옮긴다.
+		else if (map[ur][uc] == 1) {
+			s = use_map[r][c].cnt - 1;
+			for (int i = s; i >= 0; i--) {
+				tmp_d = use_map[r][c].d_num[i];
+				move(tmp_d, r, c, d, i);
+			}
+		}
+		//막힌 땅 일 경우 방향을 바꿔서 옮긴다.
+		else {
+			d = change_dir(d);
+			dron[k].dir = d;
+			//반대 방향에도 막혀 있다면, 다음 드론 이동.
+			if (map[r + dr[d]][c + dc[d]] == 2) {
+				continue;
+			}
+
+			ur = r + dr[d];
+			uc = c + dc[d];
+
+			//일반 땅 일 경우, 이 드론과 그 위에 있는 드론들을 모두 옮긴다.
+			if (map[ur][uc] == 0) {
+				//현재 위치에 드론이 몇개 있는지 확인을 하고, 전부다 옮긴다.
+				e = use_map[r][c].cnt;
+				for (int i = 0; i < e; i++) {
+					tmp_d = use_map[r][c].d_num[i];
+					move(tmp_d, r, c, d, i);
+				}
+			}
+			//빨간 땅 일 경우, 이 드론의 가장 위에 있는 드론부터 이 드론까지 모두 옮긴다.
+			else if (map[ur][uc] == 1) {
+				s = use_map[r][c].cnt - 1;
+				for (int i = s; i >= 0; i--) {
+					tmp_d = use_map[r][c].d_num[i];
+					move(tmp_d, r, c, d, i);
+				}
+			}
+		}
+		if (ck) break;
+	}
+}
+
+void move(int n, int r, int c, int d, int f) {
+	//이동 위치에 드론을 옮기고, 드론의 수를 증가시킨다.
+	ur = r + dr[d];
+	uc = c + dc[d];
+	use_map[ur][uc].d_num[use_map[ur][uc].cnt] = n;
+	use_map[ur][uc].cnt++;
+
+	//드론이 4개가 쌓였으면 return;
+	if (use_map[ur][uc].cnt == 4) {
+		ck = 1;
+		return;
+	}
+
+	//기존 위치의 dron의 수를 감소시키고, dron의 번호를 0으로 만든다.
+	use_map[r][c].cnt--;
+	use_map[r][c].d_num[f] = 0;
+
+	//마지막으로 드론 구조체에서 위치와 방향을 저장 해 준다.
+	dron[n].row = ur;
+	dron[n].col = uc;
+}
